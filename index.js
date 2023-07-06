@@ -8,58 +8,44 @@ const data = require("./data");
 const MONGODB_URI = "mongodb://127.0.0.1:27017/recipe-app";
 
 // Connection to the database "recipe-app"
-mongoose
-  .connect(MONGODB_URI)
-  .then((x) => {
-    console.log(`Connected to the database: "${x.connection.name}"`);
-    // Before adding any recipes to the database, let's remove all existing ones
-    return Recipe.deleteMany();
-  })
-  .then(() => {
+const RecipeDB = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log(`Connected to the database: "${mongoose.connection.name}"`);
+
+    await Recipe.deleteMany();
+
     const recipe = new Recipe({
       title: "Delicious Pasta",
       level: "Easy Peasy",
       ingredients: ["pasta", "tomato sauce", "cheese"],
       cuisine: "Italian",
-      dishType: 'main_course',
+      dishType: "main_course",
       duration: 30,
       creator: "Giovanni",
     });
-    return Recipe.create(recipe);
-  })
-  .then((createdRecipe) => {
+    const createdRecipe = await Recipe.create(recipe);
     console.log("Added new recipe:", createdRecipe.title);
-  })
-  .then(() => {
-    return Recipe.insertMany(data);
-  })
-  .then((createdRecipes) => {
+
+    const newAddedRecipes = await Recipe.insertMany(data);
     console.log("Added recipes to the database:");
-    createdRecipes.forEach((recipe) => {
+    newAddedRecipes.forEach((recipe) => {
       console.log(recipe.title);
     });
-  })
-  .then(()=>{
-        return Recipe.findOneAndUpdate(
-          { title: 'Rigatoni alla Genovese'},
-          { duration: 50 }
-        );
-  })
-  .then(() =>{
-    console.log('Successfully updated the duration of Rigatoni alla Genovese')
-  })
-  .then(() =>{
-    return Recipe.deleteOne(
-      {title: 'Carrot Cake'}
-    )
-  })
-  .then(() =>{
-    console.log('Successfully removed Carrot Cake');
-  })
 
-    .catch((error) => {
+    const updateRecipe = await Recipe.findOneAndUpdate(
+      { title: "Rigatoni alla Genovese" },
+      { duration: 100 }
+    );
+    console.log("Successfully updated the duration of Rigatoni alla Genovese");
+
+    const deleteRecipe = await Recipe.deleteOne({ title: "Carrot Cake" });
+    console.log("Successfully removed Carrot Cake");
+  } catch (error) {
     console.error("Error connecting to the database", error);
-  })
-  .finally(() => {
+  } finally {
     mongoose.connection.close();
-  });
+  }
+};
+
+RecipeDB();
