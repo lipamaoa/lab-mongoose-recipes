@@ -83,7 +83,7 @@ node index.js
 
 We are importing an array of recipes from the `data.json` file. Using the [`Model.insertMany`](https://mongoosejs.com/docs/api.html#model_Model.insertMany) method, you should add the entire array to the database. After inserting the documents, print the title of each recipe to the console.
 
-Tip: Follow the same tip as in the previous step.
+Tip: Follow the same tip as in the previous step.n
 
 
 ### Iteration 4 - Update recipe
